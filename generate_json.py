@@ -2,10 +2,10 @@ import os
 import json
 import requests
 
-def get_file_contributors(owner, repo, file_path, token=None):
+def get_file_commiters(owner, repo, file_path, token=None):
     base_url = "https://api.github.com"
     commits_url = f"{base_url}/repos/{owner}/{repo}/commits"
-    contributors = set()
+    commiters = set()
 
     headers = {
         "Accept": "application/vnd.github+json"
@@ -30,11 +30,11 @@ def get_file_contributors(owner, repo, file_path, token=None):
         for commit_obj in commit_data:
             author_info = commit_obj.get("author")
             if author_info and "login" in author_info:
-                contributors.add(author_info["login"])
+                commiters.add(author_info["login"])
 
         page += 1
 
-    return list(contributors)
+    return list(commiters)
 
 def collect_rules(rules_folder="rules",
                   output_file="rules_output.json",
@@ -43,7 +43,7 @@ def collect_rules(rules_folder="rules",
                   github_token=os.environ.get("GITHUB_TOKEN")):
     """
     Iterates over each subfolder in 'rules', reads the .cursorrules file, and
-    collects contributor info from GitHub if repo details are provided.
+    collects commiter info from GitHub if repo details are provided.
     """
     rules_data = []
 
@@ -63,18 +63,18 @@ def collect_rules(rules_folder="rules",
         with open(cursorrules_path, "r", encoding="utf-8") as file:
             content = file.read()
 
-        contributors = []
+        commiters = []
 
         if github_owner and github_repo:
             repo_file_path = os.path.join(rules_folder, subfolder, ".cursorrules")
             repo_file_path = repo_file_path.replace('\\', '/')
             
-            contributors = get_file_contributors(github_owner, github_repo, repo_file_path, github_token)
+            commiters = get_file_commiters(github_owner, github_repo, repo_file_path, github_token)
 
         rules_data.append({
             "name": subfolder,
             "text": content,
-            "contributors": contributors
+            "commiters": commiters
         })
 
     with open(output_file, "w", encoding="utf-8") as f:
