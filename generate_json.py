@@ -44,6 +44,8 @@ def collect_rules(rules_folder="rules",
     """
     Iterates over each subfolder in 'rules', reads the .cursorrules file, and
     collects commiter info from GitHub if repo details are provided.
+    Additionally, if a README.md file exists in the subfolder, a 'readme' field is added,
+    containing a link to the README file on GitHub.
     """
     rules_data = []
 
@@ -54,7 +56,8 @@ def collect_rules(rules_folder="rules",
 
     for subfolder in subfolders:
         print(f'processing "{subfolder}"')
-        cursorrules_path = os.path.join(rules_folder, subfolder, ".cursorrules")
+        rule_dir = os.path.join(rules_folder, subfolder)
+        cursorrules_path = os.path.join(rule_dir, ".cursorrules")
         
         if not os.path.exists(cursorrules_path):
             print(f"Warning: No .cursorrules file found in {subfolder} folder.")
@@ -63,18 +66,23 @@ def collect_rules(rules_folder="rules",
         with open(cursorrules_path, "r", encoding="utf-8") as file:
             content = file.read()
 
-        commiters = []
+        readme_file_path = os.path.join(rule_dir, "README.md")
+        if os.path.exists(readme_file_path):
+            readme_url = f"https://github.com/{github_owner}/{github_repo}/blob/main/{rules_folder}/{subfolder}/README.md"
+        else:
+            readme_url = None
 
+        commiters = []
         if github_owner and github_repo:
             repo_file_path = os.path.join(rules_folder, subfolder, ".cursorrules")
             repo_file_path = repo_file_path.replace('\\', '/')
-            
             commiters = get_file_commiters(github_owner, github_repo, repo_file_path, github_token)
 
         rules_data.append({
             "name": subfolder,
             "text": content,
-            "commiters": commiters
+            "commiters": commiters,
+            "readme": readme_url
         })
 
     with open(output_file, "w", encoding="utf-8") as f:
