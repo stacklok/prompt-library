@@ -38,8 +38,8 @@ def get_file_commiters(owner, repo, file_path, token=None):
 
 def collect_rules(rules_folder="rules",
                   output_file="rules.json",
-                  github_owner="PatrickJS",
-                  github_repo="awesome-cursorrules",
+                  github_owner="stacklok",
+                  github_repo="prompt-library",
                   github_token=os.environ.get("GITHUB_TOKEN")):
     """
     Iterates over each subfolder in 'rules', reads the .cursorrules file, and
