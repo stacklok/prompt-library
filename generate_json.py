@@ -37,7 +37,7 @@ def get_file_commiters(owner, repo, file_path, token=None):
     return list(commiters)
 
 def collect_rules(rules_folder="rules",
-                  output_file="rules_output.json",
+                  output_file="rules.json",
                   github_owner="PatrickJS",
                   github_repo="awesome-cursorrules",
                   github_token=os.environ.get("GITHUB_TOKEN")):
